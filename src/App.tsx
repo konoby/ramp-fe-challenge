@@ -15,8 +15,17 @@ export function App() {
   const [isLoading, setIsLoading] = useState(false)
   const [displayVm, setDisplayVm] = useState(true)
 
+
   const transactions = useMemo(
-    () => paginatedTransactions?.data ?? transactionsByEmployee ?? null,
+    () => 
+    {
+      
+      if(paginatedTransactions?.nextPage === null){
+          setDisplayVm(false)
+          return paginatedTransactions?.data
+      }
+      return paginatedTransactions?.data ?? transactionsByEmployee ?? null},
+   
     [paginatedTransactions, transactionsByEmployee]
   )
   
@@ -28,12 +37,8 @@ export function App() {
     await employeeUtils.fetchAll()
     setIsLoading(false)
     await paginatedTransactionsUtils.fetchAll()
-    console.log("paginated",paginatedTransactions)
-    if (paginatedTransactions&&paginatedTransactions=== null) {
-      setDisplayVm(false)
-      console.log("here")
-    }
-  }, [paginatedTransactions, employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
+   
+  }, [employeeUtils, paginatedTransactionsUtils, transactionsByEmployeeUtils])
 
   const loadTransactionsByEmployee = useCallback(
     async (employeeId: string) => {
@@ -82,7 +87,7 @@ export function App() {
         <div className="RampBreak--l" />
 
         <div className="RampGrid">
-          {displayVm&& <Transactions transactions={transactions} />}
+          { <Transactions transactions={transactions} />}
 
           {transactions !== null && displayVm && (
             <button 
